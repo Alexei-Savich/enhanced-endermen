@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "enhancedendermen:items/red_ender_shard"
+  }
+}

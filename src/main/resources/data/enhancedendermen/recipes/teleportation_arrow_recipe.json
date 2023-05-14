@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "#/#",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:arrow"
+    },
+    "/": {
+      "item": "enhancedendermen:red_ender_shard"
+    }
+  },
+  "result": {
+    "item": "enhancedendermen:teleportation_arrow",
+    "count": 8
+  }
+}

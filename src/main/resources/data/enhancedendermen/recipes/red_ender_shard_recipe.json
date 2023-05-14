@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "enhancedendermen:red_ender_pearl"
+    }
+  ],
+  "result": {
+    "item": "enhancedendermen:red_ender_shard",
+    "count": 8
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "enhancedendermen:red_ender_shard"
+  },
+  "result": "enhancedendermen:cooked_red_ender_shard",
+  "experience": 0.1,
+  "cookingtime": 100
+}
