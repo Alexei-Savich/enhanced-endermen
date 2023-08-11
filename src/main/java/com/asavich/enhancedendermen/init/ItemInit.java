@@ -1,11 +1,13 @@
 package com.asavich.enhancedendermen.init;
 
 import com.asavich.enhancedendermen.EnhancedEndermen;
+import com.asavich.enhancedendermen.entities.RedWanderer;
 import com.asavich.enhancedendermen.items.TeleportationArrowItem;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -52,4 +54,6 @@ public class ItemInit {
             )
     );
 
+    public static final RegistryObject<ForgeSpawnEggItem> RED_WANDERER_SPAWN_EGG = CreativeTabInit.addToTab(ITEMS.register("red_wanderer_spawn_egg",
+            () -> new ForgeSpawnEggItem(EntityInit.RED_WANDERER, 0x700000, 0x000000, new Item.Properties())));
 }
