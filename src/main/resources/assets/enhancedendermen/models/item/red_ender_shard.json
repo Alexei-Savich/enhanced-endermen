@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
+  "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "enhancedendermen:items/red_ender_shard"
+    "layer0": "enhancedendermen:item/red_ender_shard"
   }
 }

@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
+  "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "enhancedendermen:items/teleportation_arrow"
+    "layer0": "enhancedendermen:item/teleportation_arrow"
   }
 }

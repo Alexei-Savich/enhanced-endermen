@@ -1,7 +1,9 @@
 package com.asavich.enhancedendermen.init;
 
 import com.asavich.enhancedendermen.EnhancedEndermen;
+import com.asavich.enhancedendermen.entities.RedWanderer;
 import com.asavich.enhancedendermen.entities.TeleportationArrowEntity;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.registries.DeferredRegister;
@@ -16,6 +18,14 @@ public class EntityInit {
             () -> EntityType.Builder.of((EntityType.EntityFactory<TeleportationArrowEntity>) TeleportationArrowEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .build("teleportation_arrow")
+    );
+
+    public static final RegistryObject<EntityType<RedWanderer>> RED_WANDERER = ENTITY_TYPES.register("red_wanderer",
+            () -> EntityType.Builder.<RedWanderer>of(RedWanderer::new, MobCategory.MONSTER)
+                    .canSpawnFarFromPlayer()
+                    .fireImmune()
+                    .sized(1.0f, 1.0f)
+                    .build(new ResourceLocation(EnhancedEndermen.MOD_ID, "red_wanderer").toString())
     );
 
 }
