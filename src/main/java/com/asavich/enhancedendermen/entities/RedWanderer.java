@@ -4,7 +4,6 @@ import com.asavich.enhancedendermen.init.EntityInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -27,7 +26,6 @@ import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -80,21 +78,15 @@ public class RedWanderer extends EnderMan {
 
     public static boolean canSpawn(EntityType<RedWanderer> entityType, ServerLevelAccessor levelAccessor, MobSpawnType spawnType, BlockPos pos, RandomSource randomSource) {
         return Monster.checkMonsterSpawnRules(entityType, levelAccessor, spawnType, pos, randomSource);
-        // todo can add levelAccessor.getLevel().getLevelData().isThundering() or smth like that
     }
 
     boolean isLookingAtMe(Player player) {
-        ItemStack itemstack = player.getInventory().armor.get(3);
-        if (net.minecraftforge.common.ForgeHooks.shouldSuppressEnderManAnger(this, player, itemstack)) {
-            return false;
-        } else {
-            Vec3 vec3 = player.getViewVector(1.0F).normalize();
-            Vec3 vec31 = new Vec3(this.getX() - player.getX(), this.getEyeY() - player.getEyeY(), this.getZ() - player.getZ());
-            double d0 = vec31.length();
-            vec31 = vec31.normalize();
-            double d1 = vec3.dot(vec31);
-            return d1 > 1.0D - 0.025D / d0 ? player.hasLineOfSight(this) : false;
-        }
+        Vec3 playerViewVector = player.getViewVector(1.0F).normalize();
+        Vec3 vec3 = new Vec3(this.getX() - player.getX(), this.getEyeY() - player.getEyeY(), this.getZ() - player.getZ());
+        double length = vec3.length();
+        vec3 = vec3.normalize();
+        double d1 = playerViewVector.dot(vec3);
+        return d1 > 1.0D - 0.025D / length ? player.hasLineOfSight(this) : false;
     }
 
     boolean teleportTowards(Entity entity) {
@@ -140,8 +132,8 @@ public class RedWanderer extends EnderMan {
         @Nullable
         private LivingEntity target;
 
-        public RedWandererFreezeWhenLookedAt(RedWanderer p_32550_) {
-            this.redWanderer = p_32550_;
+        public RedWandererFreezeWhenLookedAt(RedWanderer redWanderer) {
+            this.redWanderer = redWanderer;
             this.setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
         }
 
@@ -287,8 +279,8 @@ public class RedWanderer extends EnderMan {
     static class RedWandererTakeBlockGoal extends Goal {
         private final RedWanderer redWanderer;
 
-        public RedWandererTakeBlockGoal(RedWanderer p_32585_) {
-            this.redWanderer = p_32585_;
+        public RedWandererTakeBlockGoal(RedWanderer redWanderer) {
+            this.redWanderer = redWanderer;
         }
 
         public boolean canUse() {
@@ -313,7 +305,7 @@ public class RedWanderer extends EnderMan {
             Vec3 vec31 = new Vec3((double) i + 0.5D, (double) j + 0.5D, (double) k + 0.5D);
             BlockHitResult blockhitresult = level.clip(new ClipContext(vec3, vec31, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this.redWanderer));
             boolean flag = blockhitresult.getBlockPos().equals(blockpos);
-            if (blockstate.is(BlockTags.ENDERMAN_HOLDABLE) && flag) {
+            if (flag) {
                 level.removeBlock(blockpos, false);
                 level.gameEvent(GameEvent.BLOCK_DESTROY, blockpos, GameEvent.Context.of(this.redWanderer, blockstate));
                 this.redWanderer.setCarriedBlock(blockstate.getBlock().defaultBlockState());
