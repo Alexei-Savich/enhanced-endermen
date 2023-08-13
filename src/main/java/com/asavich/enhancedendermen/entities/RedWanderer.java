@@ -22,6 +22,7 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.monster.Monster;
@@ -42,9 +43,13 @@ import java.util.EnumSet;
 import java.util.function.Predicate;
 
 public class RedWanderer extends EnderMan {
+    private final RandomSource random = RandomSource.create();
 
     public RedWanderer(EntityType<RedWanderer> type, Level level) {
         super(type, level);
+        if (random.nextInt(100) > 98) {
+            this.setCarriedBlock(Blocks.TNT.defaultBlockState());
+        }
     }
 
     public RedWanderer(Level level, double x, double y, double z) {
@@ -86,7 +91,7 @@ public class RedWanderer extends EnderMan {
         double length = vec3.length();
         vec3 = vec3.normalize();
         double d1 = playerViewVector.dot(vec3);
-        return d1 > 1.0D - 0.025D / length ? player.hasLineOfSight(this) : false;
+        return d1 > 1.0D - 0.025D / length && player.hasLineOfSight(this);
     }
 
     boolean teleportTowards(Entity entity) {
@@ -101,7 +106,7 @@ public class RedWanderer extends EnderMan {
     private boolean teleport(double x, double y, double z) {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(x, y, z);
 
-        while(blockpos$mutableblockpos.getY() > this.level().getMinBuildHeight() && !this.level().getBlockState(blockpos$mutableblockpos).blocksMotion()) {
+        while (blockpos$mutableblockpos.getY() > this.level().getMinBuildHeight() && !this.level().getBlockState(blockpos$mutableblockpos).blocksMotion()) {
             blockpos$mutableblockpos.move(Direction.DOWN);
         }
 
@@ -116,7 +121,7 @@ public class RedWanderer extends EnderMan {
             if (flag2) {
                 this.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
                 if (!this.isSilent()) {
-                    this.level().playSound((Player) null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
+                    this.level().playSound(null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
                     this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
                 }
             }
@@ -143,7 +148,7 @@ public class RedWanderer extends EnderMan {
                 return false;
             } else {
                 double d0 = this.target.distanceToSqr(this.redWanderer);
-                return d0 > 256.0D ? false : this.redWanderer.isLookingAtMe((Player) this.target);
+                return !(d0 > 256.0D) && this.redWanderer.isLookingAtMe((Player) this.target);
             }
         }
 
@@ -159,8 +164,8 @@ public class RedWanderer extends EnderMan {
     static class RedWandererLeaveBlockGoal extends Goal {
         private final RedWanderer redWanderer;
 
-        public RedWandererLeaveBlockGoal(RedWanderer p_32556_) {
-            this.redWanderer = p_32556_;
+        public RedWandererLeaveBlockGoal(RedWanderer redWanderer) {
+            this.redWanderer = redWanderer;
         }
 
         public boolean canUse() {
@@ -179,24 +184,29 @@ public class RedWanderer extends EnderMan {
             int i = Mth.floor(this.redWanderer.getX() - 1.0D + randomsource.nextDouble() * 2.0D);
             int j = Mth.floor(this.redWanderer.getY() + randomsource.nextDouble() * 2.0D);
             int k = Mth.floor(this.redWanderer.getZ() - 1.0D + randomsource.nextDouble() * 2.0D);
-            BlockPos blockpos = new BlockPos(i, j, k);
-            BlockState blockstate = level.getBlockState(blockpos);
-            BlockPos blockpos1 = blockpos.below();
-            BlockState blockstate1 = level.getBlockState(blockpos1);
-            BlockState blockstate2 = this.redWanderer.getCarriedBlock();
-            if (blockstate2 != null) {
-                blockstate2 = Block.updateFromNeighbourShapes(blockstate2, this.redWanderer.level(), blockpos);
-                if (this.canPlaceBlock(level, blockpos, blockstate2, blockstate, blockstate1, blockpos1) && !net.minecraftforge.event.ForgeEventFactory.onBlockPlace(redWanderer, net.minecraftforge.common.util.BlockSnapshot.create(level.dimension(), level, blockpos1), net.minecraft.core.Direction.UP)) {
-                    level.setBlock(blockpos, blockstate2, 3);
-                    level.gameEvent(GameEvent.BLOCK_PLACE, blockpos, GameEvent.Context.of(this.redWanderer, blockstate2));
-                    this.redWanderer.setCarriedBlock((BlockState) null);
+            BlockPos targetPos = new BlockPos(i, j, k);
+            BlockState targetBlock = level.getBlockState(targetPos);
+            BlockPos belowTargetPos = targetPos.below();
+            BlockState belowTarget = level.getBlockState(belowTargetPos);
+            BlockState carried = this.redWanderer.getCarriedBlock();
+            if (carried != null) {
+                carried = Block.updateFromNeighbourShapes(carried, this.redWanderer.level(), targetPos);
+                if (this.canPlaceBlock(level, targetPos, carried, targetBlock, belowTarget, belowTargetPos) && !net.minecraftforge.event.ForgeEventFactory.onBlockPlace(redWanderer, net.minecraftforge.common.util.BlockSnapshot.create(level.dimension(), level, belowTargetPos), net.minecraft.core.Direction.UP)) {
+                    if (carried.equals(Blocks.TNT.defaultBlockState())) {
+                        PrimedTnt summonedTnt = new PrimedTnt(level, targetPos.getX(), targetPos.getY(), targetPos.getZ(), this.redWanderer);
+                        level.addFreshEntity(summonedTnt);
+                    } else {
+                        level.setBlock(targetPos, carried, 3);
+                        level.gameEvent(GameEvent.BLOCK_PLACE, targetPos, GameEvent.Context.of(this.redWanderer, carried));
+                    }
+                    this.redWanderer.setCarriedBlock(null);
                 }
 
             }
         }
 
-        private boolean canPlaceBlock(Level p_32559_, BlockPos p_32560_, BlockState p_32561_, BlockState p_32562_, BlockState p_32563_, BlockPos p_32564_) {
-            return p_32562_.isAir() && !p_32563_.isAir() && !p_32563_.is(Blocks.BEDROCK) && !p_32563_.is(net.minecraftforge.common.Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST) && p_32563_.isCollisionShapeFullBlock(p_32559_, p_32564_) && p_32561_.canSurvive(p_32559_, p_32560_) && p_32559_.getEntities(this.redWanderer, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(p_32560_))).isEmpty();
+        private boolean canPlaceBlock(Level level, BlockPos targetPos, BlockState carriedBlock, BlockState targetBlock, BlockState belowTargetBlock, BlockPos belowTargetPos) {
+            return targetBlock.isAir() && !belowTargetBlock.isAir() && !belowTargetBlock.is(net.minecraftforge.common.Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST) && belowTargetBlock.isCollisionShapeFullBlock(level, belowTargetPos) && carriedBlock.canSurvive(level, targetPos) && level.getEntities(this.redWanderer, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(targetPos))).isEmpty();
         }
     }
 
@@ -209,12 +219,10 @@ public class RedWanderer extends EnderMan {
         private final TargetingConditions startAggroTargetConditions;
         private final TargetingConditions continueAggroTargetConditions = TargetingConditions.forCombat().ignoreLineOfSight();
 
-        public RedWandererLookForPlayerGoal(RedWanderer p_32573_, @Nullable Predicate<LivingEntity> p_32574_) {
-            super(p_32573_, Player.class, 10, false, false, p_32574_);
-            this.redWanderer = p_32573_;
-            this.startAggroTargetConditions = TargetingConditions.forCombat().range(this.getFollowDistance()).selector((p_32578_) -> {
-                return p_32573_.isLookingAtMe((Player) p_32578_);
-            });
+        public RedWandererLookForPlayerGoal(RedWanderer redWanderer, @Nullable Predicate<LivingEntity> target) {
+            super(redWanderer, Player.class, 10, false, false, target);
+            this.redWanderer = redWanderer;
+            this.startAggroTargetConditions = TargetingConditions.forCombat().range(this.getFollowDistance()).selector((player) -> redWanderer.isLookingAtMe((Player) player));
         }
 
         public boolean canUse() {
@@ -242,13 +250,13 @@ public class RedWanderer extends EnderMan {
                     return true;
                 }
             } else {
-                return this.target != null && this.continueAggroTargetConditions.test(this.redWanderer, this.target) ? true : super.canContinueToUse();
+                return this.target != null && this.continueAggroTargetConditions.test(this.redWanderer, this.target) || super.canContinueToUse();
             }
         }
 
         public void tick() {
             if (this.redWanderer.getTarget() == null) {
-                super.setTarget((LivingEntity) null);
+                super.setTarget(null);
             }
 
             if (this.pendingTarget != null) {
