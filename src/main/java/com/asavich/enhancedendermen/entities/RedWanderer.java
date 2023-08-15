@@ -1,6 +1,7 @@
 package com.asavich.enhancedendermen.entities;
 
 import com.asavich.enhancedendermen.init.EntityInit;
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -37,17 +38,21 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.function.Predicate;
 
+import static com.asavich.enhancedendermen.util.LogicUtils.getAllBlocksInSquareRadius;
+
 public class RedWanderer extends EnderMan {
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final RandomSource random = RandomSource.create();
 
     public RedWanderer(EntityType<RedWanderer> type, Level level) {
         super(type, level);
-        if (random.nextInt(100) > 98) {
+        if (random.nextInt(100) > 97) {
             this.setCarriedBlock(Blocks.TNT.defaultBlockState());
         }
     }
@@ -190,6 +195,10 @@ public class RedWanderer extends EnderMan {
             BlockState belowTarget = level.getBlockState(belowTargetPos);
             BlockState carried = this.redWanderer.getCarriedBlock();
             if (carried != null) {
+                if (getAllBlocksInSquareRadius(targetPos, 20, level).contains(Blocks.BAMBOO)) { //todo change to a new block
+                    LOGGER.debug("Blocked placing a block because of BAMBOO at pos: {}", targetPos);
+                    return;
+                }
                 carried = Block.updateFromNeighbourShapes(carried, this.redWanderer.level(), targetPos);
                 if (this.canPlaceBlock(level, targetPos, carried, targetBlock, belowTarget, belowTargetPos) && !net.minecraftforge.event.ForgeEventFactory.onBlockPlace(redWanderer, net.minecraftforge.common.util.BlockSnapshot.create(level.dimension(), level, belowTargetPos), net.minecraft.core.Direction.UP)) {
                     if (carried.equals(Blocks.TNT.defaultBlockState())) {
@@ -314,6 +323,10 @@ public class RedWanderer extends EnderMan {
             BlockHitResult blockhitresult = level.clip(new ClipContext(vec3, vec31, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this.redWanderer));
             boolean flag = blockhitresult.getBlockPos().equals(blockpos);
             if (flag) {
+                if (getAllBlocksInSquareRadius(blockpos, 20, level).contains(Blocks.BAMBOO)) { //todo change to a new block
+                    LOGGER.debug("Blocked taking a block because of BAMBOO at pos: {}", blockpos);
+                    return;
+                }
                 level.removeBlock(blockpos, false);
                 level.gameEvent(GameEvent.BLOCK_DESTROY, blockpos, GameEvent.Context.of(this.redWanderer, blockstate));
                 this.redWanderer.setCarriedBlock(blockstate.getBlock().defaultBlockState());
