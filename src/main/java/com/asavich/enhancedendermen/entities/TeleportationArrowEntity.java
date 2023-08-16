@@ -31,19 +31,19 @@ public class TeleportationArrowEntity extends AbstractArrow {
 
     @Override
     protected ItemStack getPickupItem() {
-        LOGGER.info("Picked up a teleportation arrow");
+        LOGGER.debug("Picked up a teleportation arrow");
         return ItemStack.EMPTY;
     }
 
     @Override
     protected void onHitEntity(EntityHitResult entity) {
-        LOGGER.info("Hit entity {}", entity.getEntity());
+        LOGGER.debug("Hit entity {}", entity.getEntity());
         if (this.getOwner() != null) {
             int origX = this.getOwner().getBlockX();
             int origY = this.getOwner().getBlockY();
             int origZ = this.getOwner().getBlockZ();
             this.getOwner().teleportTo(entity.getEntity().getX(), entity.getEntity().getY(), entity.getEntity().getZ());
-            LOGGER.info("Teleporting entity to player position: {}, {}, {}", origX, origY, origZ);
+            LOGGER.debug("Teleporting entity to player position: {}, {}, {}", origX, origY, origZ);
             entity.getEntity().teleportTo(origX, origY, origZ);
         }
         super.onHitEntity(entity);
@@ -52,7 +52,7 @@ public class TeleportationArrowEntity extends AbstractArrow {
     @Override
     protected void onHitBlock(BlockHitResult block) {
         super.onHitBlock(block);
-        LOGGER.info("Hit block at: {}", block.getBlockPos());
+        LOGGER.debug("Hit block at: {}", block.getBlockPos());
         if (this.getOwner() != null) {
             this.getOwner().teleportTo(block.getBlockPos().getX(), block.getBlockPos().getY(), block.getBlockPos().getZ());
         }
@@ -61,7 +61,7 @@ public class TeleportationArrowEntity extends AbstractArrow {
     @Override
     protected void tickDespawn() {
         if (this.inGroundTime > 0) {
-            LOGGER.info("Removing arrow");
+            LOGGER.debug("Removing arrow");
             this.discard();
         }
     }
