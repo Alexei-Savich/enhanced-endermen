@@ -1,5 +1,6 @@
 package com.asavich.enhancedendermen.entities;
 
+import com.asavich.enhancedendermen.init.BlockInit;
 import com.asavich.enhancedendermen.init.EntityInit;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
@@ -195,8 +196,8 @@ public class RedWanderer extends EnderMan {
             BlockState belowTarget = level.getBlockState(belowTargetPos);
             BlockState carried = this.redWanderer.getCarriedBlock();
             if (carried != null) {
-                if (getAllBlocksInSquareRadius(targetPos, 20, level).contains(Blocks.BAMBOO)) { //todo change to a new block
-                    LOGGER.debug("Blocked placing a block because of BAMBOO at pos: {}", targetPos);
+                if (getAllBlocksInSquareRadius(targetPos, 20, level).contains(BlockInit.REPELLER)) {
+                    LOGGER.debug("Blocked placing a block because of REPELLER at pos: {}", targetPos);
                     return;
                 }
                 carried = Block.updateFromNeighbourShapes(carried, this.redWanderer.level(), targetPos);
@@ -323,8 +324,8 @@ public class RedWanderer extends EnderMan {
             BlockHitResult blockhitresult = level.clip(new ClipContext(vec3, vec31, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this.redWanderer));
             boolean flag = blockhitresult.getBlockPos().equals(blockpos);
             if (flag) {
-                if (getAllBlocksInSquareRadius(blockpos, 20, level).contains(Blocks.BAMBOO)) { //todo change to a new block
-                    LOGGER.debug("Blocked taking a block because of BAMBOO at pos: {}", blockpos);
+                if (getAllBlocksInSquareRadius(blockpos, 20, level).contains(BlockInit.REPELLER)) {
+                    LOGGER.debug("Blocked taking a block because of REPELLER at pos: {}", blockpos);
                     return;
                 }
                 level.removeBlock(blockpos, false);

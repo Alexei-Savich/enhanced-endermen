@@ -1,7 +1,7 @@
 package com.asavich.enhancedendermen;
 
+import com.asavich.enhancedendermen.init.BlockInit;
 import com.asavich.enhancedendermen.init.CreativeTabInit;
-import com.asavich.enhancedendermen.events.loot.ModLootModifiers;
 import com.asavich.enhancedendermen.init.EntityInit;
 import com.asavich.enhancedendermen.init.ItemInit;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,7 +22,7 @@ public class EnhancedEndermen {
         ItemInit.ITEMS.register(modEventBus);
         EntityInit.ENTITY_TYPES.register(modEventBus);
         CreativeTabInit.TABS.register(modEventBus);
-        ModLootModifiers.LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
+        BlockInit.BLOCKS.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
     }

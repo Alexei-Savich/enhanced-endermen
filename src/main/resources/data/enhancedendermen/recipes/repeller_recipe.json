@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " ! ",
+    "?/?",
+    "#*#"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:cobblestone"
+    },
+    "/": {
+      "item": "minecraft:redstone_lamp"
+    },
+    "?": {
+      "item": "enhancedendermen:red_ender_shard"
+    },
+    "*": {
+      "item": "minecraft:redstone_block"
+    },
+    "!": {
+      "item": "minecraft:goat_horn"
+    }
+  },
+  "result": {
+    "item": "enhancedendermen:repeller",
+    "count": 1
+  }
+}

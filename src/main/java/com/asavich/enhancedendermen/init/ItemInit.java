@@ -6,6 +6,7 @@ import com.asavich.enhancedendermen.items.TeleportationArrowItem;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
@@ -55,5 +56,10 @@ public class ItemInit {
     );
 
     public static final RegistryObject<ForgeSpawnEggItem> RED_WANDERER_SPAWN_EGG = CreativeTabInit.addToTab(ITEMS.register("red_wanderer_spawn_egg",
-            () -> new ForgeSpawnEggItem(EntityInit.RED_WANDERER, 0x700000, 0x000000, new Item.Properties())));
+            () -> new ForgeSpawnEggItem(EntityInit.RED_WANDERER, 0x700000, 0x000000, new Item.Properties())
+    ));
+
+    public static final RegistryObject<BlockItem> REPELLER = CreativeTabInit.addToTab(ITEMS.register("repeller",
+            () -> new BlockItem(BlockInit.REPELLER.get(), new Item.Properties().stacksTo(64))
+    ));
 }
