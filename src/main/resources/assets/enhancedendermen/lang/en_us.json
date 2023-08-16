@@ -5,5 +5,8 @@
   "item.enhancedendermen.red_eye_of_ender": "Red Eye of Ender",
   "item.enhancedendermen.red_ender_shard": "Red Ender Shard",
   "item.enhancedendermen.teleportation_arrow": "Teleportation arrow",
-  "item.enhancedendermen.cooked_red_ender_shard": "Cooked Red Ender Shard"
+  "item.enhancedendermen.cooked_red_ender_shard": "Cooked Red Ender Shard",
+  "entity.enhancedendermen.red_wanderer": "Red Wanderer",
+  "item.enhancedendermen.red_wanderer_spawn_egg" : "Red Wanderer Spawn Egg",
+  "block.enhancedendermen.repeller" : "Repeller"
 }

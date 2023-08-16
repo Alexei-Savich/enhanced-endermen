@@ -24,7 +24,7 @@ public class EntityInit {
             () -> EntityType.Builder.<RedWanderer>of(RedWanderer::new, MobCategory.MONSTER)
                     .canSpawnFarFromPlayer()
                     .fireImmune()
-                    .sized(1.0f, 1.0f)
+                    .sized(0.6f, 2.8f)
                     .build(new ResourceLocation(EnhancedEndermen.MOD_ID, "red_wanderer").toString())
     );
 
