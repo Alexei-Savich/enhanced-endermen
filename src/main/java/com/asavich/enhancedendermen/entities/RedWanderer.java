@@ -205,6 +205,14 @@ public class RedWanderer extends EnderMan {
                     if (carried.equals(Blocks.TNT.defaultBlockState())) {
                         PrimedTnt summonedTnt = new PrimedTnt(level, targetPos.getX(), targetPos.getY(), targetPos.getZ(), this.redWanderer);
                         level.addFreshEntity(summonedTnt);
+                        boolean teleportSuccess = this.redWanderer.teleport();
+                        int counter = 0;
+                        LOGGER.debug("Attempt #{} to teleport after placing a TNT: {}", counter + 1, teleportSuccess);
+                        while (!teleportSuccess && counter < 5) {
+                            teleportSuccess = this.redWanderer.teleport();
+                            counter++;
+                            LOGGER.debug("Attempt #{} to teleport after placing a TNT: {}", counter + 1, teleportSuccess);
+                        }
                     } else {
                         level.setBlock(targetPos, carried, 3);
                         level.gameEvent(GameEvent.BLOCK_PLACE, targetPos, GameEvent.Context.of(this.redWanderer, carried));
