@@ -42,14 +42,17 @@ import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.EnumSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static com.asavich.enhancedendermen.util.LogicUtils.getAllBlocksInSquareRadius;
 
 public class RedWanderer extends EnderMan {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final RandomSource random = RandomSource.create();
+    private Entity carriedEntity = null;
 
     public RedWanderer(EntityType<RedWanderer> type, Level level) {
         super(type, level);
@@ -70,7 +73,7 @@ public class RedWanderer extends EnderMan {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new RedWandererFreezeWhenLookedAt(this));
+        this.goalSelector.addGoal(1, new RedWandererTeleportHostileMobTowardsPlayer(this));
         this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D, 0.0F));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
@@ -138,32 +141,62 @@ public class RedWanderer extends EnderMan {
         }
     }
 
-    static class RedWandererFreezeWhenLookedAt extends Goal {
+    static class RedWandererTeleportHostileMobTowardsPlayer extends Goal {
         private final RedWanderer redWanderer;
         @Nullable
         private LivingEntity target;
+        private List<Monster> mobs = new ArrayList<>();
+        private final TargetingConditions mobsTargeting = TargetingConditions.forNonCombat().range(64.0D).ignoreLineOfSight();
+        private Monster currMob;
 
-        public RedWandererFreezeWhenLookedAt(RedWanderer redWanderer) {
+        public RedWandererTeleportHostileMobTowardsPlayer(RedWanderer redWanderer) {
             this.redWanderer = redWanderer;
-            this.setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
         }
 
         public boolean canUse() {
             this.target = this.redWanderer.getTarget();
-            if (!(this.target instanceof Player)) {
-                return false;
-            } else {
-                double d0 = this.target.distanceToSqr(this.redWanderer);
-                return !(d0 > 256.0D) && this.redWanderer.isLookingAtMe((Player) this.target);
-            }
+            return target != null;
         }
 
         public void start() {
-            this.redWanderer.getNavigation().stop();
+            mobs = getMobs();
+            LOGGER.debug("Located {} mobs: {}", mobs.size(), mobs);
         }
 
         public void tick() {
-            this.redWanderer.getLookControl().setLookAt(this.target.getX(), this.target.getEyeY(), this.target.getZ());
+            if (mobs.isEmpty()) {
+                mobs = getMobs();
+            }
+            if (redWanderer.carriedEntity != null) {
+                boolean couldTpToTarget = redWanderer.teleportTowards(target);
+                if(couldTpToTarget){
+                    LOGGER.debug("Teleported with {} to TARGET", redWanderer.carriedEntity);
+                    redWanderer.carriedEntity.teleportTo(target.getX(), target.getY(), target.getZ());
+                } else {
+                    redWanderer.carriedEntity = null;
+                    currMob = null;
+                }
+            }
+            if (currMob == null) {
+                currMob = mobs.get(0);
+                mobs.remove(0);
+                LOGGER.debug("Current mob is {}", currMob);
+            }
+            if (redWanderer.distanceToSqr(currMob) > 4) {
+                boolean successTp = redWanderer.teleport(currMob.getX(), currMob.getY(), currMob.getZ());
+                if (successTp) {
+                    LOGGER.debug("Teleported to take {}", currMob);
+                    redWanderer.carriedEntity = currMob;
+                } else {
+                    currMob = null;
+                }
+            }
+        }
+
+        private List<Monster> getMobs() {
+            return this.redWanderer.level()
+                    .getNearbyEntities(Monster.class, mobsTargeting, this.redWanderer, this.redWanderer.getBoundingBox().inflate(128d, 64d, 128d))
+                    .stream().filter(monster -> !monster.getClass().equals(RedWanderer.class)).collect(Collectors.toList());
         }
     }
 
