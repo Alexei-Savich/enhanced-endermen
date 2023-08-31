@@ -8,10 +8,15 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.SwordItem;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+
+import static com.asavich.enhancedendermen.init.tiers.ItemTiers.SWORD_OF_TP_TIER;
+import static com.asavich.enhancedendermen.init.tiers.ItemTiers.WAND_OF_TP_TIER;
 
 public class ItemInit {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, EnhancedEndermen.MOD_ID);
@@ -61,5 +66,13 @@ public class ItemInit {
 
     public static final RegistryObject<BlockItem> REPELLER = CreativeTabInit.addToTab(ITEMS.register("repeller",
             () -> new BlockItem(BlockInit.REPELLER.get(), new Item.Properties().stacksTo(64))
+    ));
+
+    public static final RegistryObject<SwordItem> WAND_OF_TELEPORTATION = CreativeTabInit.addToTab(ITEMS.register("wand_of_teleportation",
+            () -> new SwordItem(WAND_OF_TP_TIER, 1, 4f, new Item.Properties().rarity(Rarity.EPIC))
+    ));
+
+    public static final RegistryObject<SwordItem> SWORD_OF_TELEPORTATION = CreativeTabInit.addToTab(ITEMS.register("sword_of_teleportation",
+            () -> new SwordItem(SWORD_OF_TP_TIER, 4, 2.5f, new Item.Properties().rarity(Rarity.EPIC))
     ));
 }

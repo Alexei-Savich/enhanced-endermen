@@ -8,5 +8,7 @@
   "item.enhancedendermen.cooked_red_ender_shard": "Приготовленный красный осколок края",
   "entity.enhancedendermen.red_wanderer": "Красный странник",
   "item.enhancedendermen.red_wanderer_spawn_egg" : "Призвать красного странника",
-  "block.enhancedendermen.repeller" : "Отпугиватель"
+  "block.enhancedendermen.repeller" : "Отпугиватель",
+  "item.enhancedendermen.wand_of_teleportation": "Посох телепортации",
+  "item.enhancedendermen.sword_of_teleportation": "Меч телепортации"
 }
