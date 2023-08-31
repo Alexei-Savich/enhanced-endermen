@@ -1,6 +1,7 @@
 package com.asavich.enhancedendermen.util;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
@@ -19,6 +20,10 @@ public class LogicUtils {
             }
         }
         return res;
+    }
+
+    public static double calculateDistanceBetweenEntities(LivingEntity e1, LivingEntity e2){
+        return e1.distanceTo(e2);
     }
 
 }
