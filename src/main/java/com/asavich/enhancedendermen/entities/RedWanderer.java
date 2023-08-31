@@ -148,6 +148,7 @@ public class RedWanderer extends EnderMan {
         private List<Monster> mobs = new ArrayList<>();
         private final TargetingConditions mobsTargeting = TargetingConditions.forNonCombat().range(64.0D).ignoreLineOfSight();
         private Monster currMob;
+        private int ticksCounter = 0;
 
         public RedWandererTeleportHostileMobTowardsPlayer(RedWanderer redWanderer) {
             this.redWanderer = redWanderer;
@@ -167,9 +168,13 @@ public class RedWanderer extends EnderMan {
             if (mobs.isEmpty()) {
                 mobs = getMobs();
             }
+            if (ticksCounter < 20) {
+                ticksCounter++;
+                return;
+            }
             if (redWanderer.carriedEntity != null) {
                 boolean couldTpToTarget = redWanderer.teleportTowards(target);
-                if(couldTpToTarget){
+                if (couldTpToTarget) {
                     LOGGER.debug("Teleported with {} to TARGET", redWanderer.carriedEntity);
                     redWanderer.carriedEntity.teleportTo(target.getX(), target.getY(), target.getZ());
                 } else {
