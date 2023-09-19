@@ -2,7 +2,9 @@ package com.asavich.enhancedendermen.init;
 
 import com.asavich.enhancedendermen.EnhancedEndermen;
 import com.asavich.enhancedendermen.entities.RedWanderer;
+import com.asavich.enhancedendermen.items.SwordOfTeleportationItem;
 import com.asavich.enhancedendermen.items.TeleportationArrowItem;
+import com.asavich.enhancedendermen.items.WandOfTeleportationItem;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
@@ -69,10 +71,10 @@ public class ItemInit {
     ));
 
     public static final RegistryObject<SwordItem> WAND_OF_TELEPORTATION = CreativeTabInit.addToTab(ITEMS.register("wand_of_teleportation",
-            () -> new SwordItem(WAND_OF_TP_TIER, 1, 4f, new Item.Properties().rarity(Rarity.EPIC))
+            () -> new WandOfTeleportationItem(WAND_OF_TP_TIER, 1, 0.3f, new Item.Properties().rarity(Rarity.EPIC))
     ));
 
     public static final RegistryObject<SwordItem> SWORD_OF_TELEPORTATION = CreativeTabInit.addToTab(ITEMS.register("sword_of_teleportation",
-            () -> new SwordItem(SWORD_OF_TP_TIER, 4, 2.5f, new Item.Properties().rarity(Rarity.EPIC))
+            () -> new SwordOfTeleportationItem(SWORD_OF_TP_TIER, 4, 0.5f, new Item.Properties().rarity(Rarity.EPIC))
     ));
 }

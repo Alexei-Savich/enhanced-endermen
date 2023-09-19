@@ -8,8 +8,8 @@ import net.minecraftforge.common.Tags;
 public class ItemTiers {
     public static final ForgeTier WAND_OF_TP_TIER = new ForgeTier(
             4,
-            1000,
-            4,
+            500,
+            0.3f,
             0,
             20,
             Tags.Blocks.NEEDS_WOOD_TOOL,
@@ -19,7 +19,7 @@ public class ItemTiers {
     public static final ForgeTier SWORD_OF_TP_TIER = new ForgeTier(
             4,
             1000,
-            2.5f,
+            0.5f,
             0,
             20,
             Tags.Blocks.NEEDS_WOOD_TOOL,
